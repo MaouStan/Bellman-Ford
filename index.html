@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bellman-Ford Algorithm Visualization</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Add Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="controls" class="container mt-4">
+        <div class="row">
+            <div class="col-md-2">
+                <label for="source">Select Source:</label>
+                <select id="source" class="form-control"></select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button id="run" class="btn btn-primary w-100">Run Bellman-Ford</button>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button id="addEdge" class="btn btn-secondary w-100">Add Edge</button>
+            </div>
+            <div class="col-md-2">
+                <label for="nodeName">Node Name:</label>
+                <input type="text" id="nodeName" class="form-control" placeholder="Enter node name">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button id="addCustomNode" class="btn btn-success w-100">Add Custom Node</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <label for="deleteNode">Select Node to Delete:</label>
+                <select id="deleteNode" class="form-control"></select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button id="deleteNodeButton" class="btn btn-danger w-100">Delete Node</button>
+            </div>
+        </div>
+
+        <!-- Results Table Container -->
+        <h2 class="mt-4">Bellman-Ford Results</h2>
+        <table id="resultsTable" class="table table-bordered" style="visibility: hidden;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Distance</th>
+                    <th>Path</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Results will be populated here dynamically -->
+            </tbody>
+        </table>
+    </div>
+    <canvas id="graphCanvas" width="800" height="600" class="mt-4"></canvas>
+    <!-- Add Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
