@@ -39,6 +39,12 @@
             <div class="col-md-2 d-flex align-items-end">
                 <button id="deleteNodeButton" class="btn btn-danger w-100">Delete Node</button>
             </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button id="importMatrix" class="btn btn-info w-100">Import Matrix</button>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button id="importList" class="btn btn-warning w-100">Import List</button>
+            </div>
         </div>
 
         <!-- Results Table Container -->
@@ -62,6 +68,47 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="script.js"></script>
+    <!-- Add this inside the body tag, preferably near the end -->
+    <div class="modal fade" id="matrixModal" tabindex="-1" role="dialog" aria-labelledby="matrixModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="matrixModalLabel">Import Matrix</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="matrixInput">Enter matrix in JSON format (e.g., [[0,1,0],[1,0,1],[0,1,0]]):</label>
+                    <textarea id="matrixInput" class="form-control" rows="5" placeholder="[[0,1,0],[1,0,1],[0,1,0]]"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" id="submitMatrix" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Add this inside the body tag, preferably near the end -->
+    <div class="modal fade" id="listModal" tabindex="-1" role="dialog" aria-labelledby="listModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="listModalLabel">Import List</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="listInput">Enter list in format (e.g., a-(2)-b, b-(2)-a):</label>
+                    <textarea id="listInput" class="form-control" rows="5" placeholder="a-(2)-b, b-(2)-a"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" id="submitList" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
-
 </html>
