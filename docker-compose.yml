@@ -1,12 +1,6 @@
-version: '3.8'
-
+version: '3'
 services:
   web:
-    image: nginx:alpine
-    container_name: bellford
+    build: .
     ports:
       - "8887:80"
-    volumes:
-      - ./index.html:/usr/share/nginx/html/index.html
-      - ./script.js:/usr/share/nginx/html/script.js
-      - ./style.css:/usr/share/nginx/html/style.css
