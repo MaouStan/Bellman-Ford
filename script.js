@@ -59,6 +59,28 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Click on the source node, then the destination node.');
     }
 
+    // Function to update the edges table
+    function updateEdgesTable() {
+        const tableBody = document.querySelector('#edgesTable tbody');
+        tableBody.innerHTML = ''; // Clear existing rows
+
+        graph.forEach((nodeData, u) => {
+            nodeData.edges.forEach(({ v, weight }) => {
+                const row = document.createElement('tr');
+
+                const sourceCell = document.createElement('td');
+                sourceCell.textContent = u;
+                row.appendChild(sourceCell);
+
+                const destinationCell = document.createElement('td');
+                destinationCell.textContent = v;
+                row.appendChild(destinationCell);
+
+                tableBody.appendChild(row);
+            });
+        });
+    }
+
     // ฟังก์ชันสำหรับเลือกโหนดเพื่อเพิ่มขอบ
     function selectNodeForEdge(e) {
         // หาตำแหน่งของเมาส์บน canvas
@@ -86,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             graph.get(selectedNode).edges.push({ v: destinationNode, weight: parseInt(weight, 10) });
                             // วาดกราฟใหม่
                             drawGraph();
+                            updateEdgesTable(); // Update the table after adding an edge
                         } else {
                             // แสดงข้อความแจ้งเตือนว่าน้ำหนักไม่ถูกต้อง
                             alert('Invalid weight. Please try again.');
@@ -353,7 +376,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // สร้างแผนที่สำหรับเก็บโหนดก่อนหน้า
         const predecessors = new Map();
         // สร้างอาเรย์สำหรับเก็บผลลัพธ์แต่ละ iteration
-        const iterationResults = []; // {{ added: Array to store iteration results }}
+        const iterationResults = {};
+        // const iterationResults = {
+        //     '0':[
+        //         {
+        //             name: source,
+        //             distance: 0,
+        //             path: []
+        //         }
+        //     ]
+        // }; // {{ added: Array to store iteration results }}
 
         // วนลูปผ่านโหนดทั้งหมดในกราฟ
         graph.forEach((nodeData, node) => {
@@ -367,8 +399,11 @@ document.addEventListener('DOMContentLoaded', () => {
         graph.forEach((_, node) => {
             const distance = distances.get(node);
             const path = reconstructPath(predecessors, source, node);
-            iterationResults.push({ iteration: 0, name: node, distance: distance, path: path });
-            console.log(iterationResults);
+            if (!iterationResults[0]) {
+                iterationResults[0] = [];
+            }
+            iterationResults[0].push({ name: node, distance: distance, path: path });
+            console.log(111, iterationResults);
         });
 
         // วนลูป n-1 ครั้ง (n คือจำนวนโหนด)
@@ -387,20 +422,29 @@ document.addEventListener('DOMContentLoaded', () => {
                         // อัปเดตโหนดก่อนหน้า
                         predecessors.set(v, u);
                         console.log(i, updated);
+                        updated = true;
                     }
                 });
             });
-            
+
             // บันทึกผลลัพธ์ของ iteration นี้
             graph.forEach((_, node) => {
                 const distance = distances.get(node);
                 const path = reconstructPath(predecessors, source, node);
-                iterationResults.push({ iteration: i + 1, name: node, distance: distance, path: path });
-                console.log(iterationResults);
+                if (!iterationResults[i + 1]) {
+                    iterationResults[i + 1] = [];
+                }
+                iterationResults[i + 1].push({ name: node, distance: distance, path: path });
+                console.log(222, iterationResults);
             });
 
             if (!updated) { // {{ added: No updates in this iteration }}
                 console.log(`No updates in iteration ${i + 1}, terminating early.`);
+                // duplicate all iteration
+                for (let j = i; j < graph.size - 1; j++) {
+                    iterationResults[j + 1] = iterationResults[j];
+                    console.log(333, iterationResults);
+                }
                 break; // {{ added: Break out of the loop early }}
             }
         }
@@ -699,40 +743,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // เพิ่มฟังก์ชันสำหรับแสดงตารางผลลัพธ์การ iteration
     function displayIterationTable(iterationResults) {
-        if (iterationResults.length > 0) {
-            // แสดงป้ายชื่อ "Bellman-Ford Iteration Results"
+        // Check if there are any iteration results
+        if (Object.keys(iterationResults).length > 0) {
+            // Show the "Bellman-Ford Iteration Results" label
             $('#iterationLabel').show();
         } else {
-            // ซ่อนป้ายชื่อหากไม่มีผลการ iteration
+            // Hide the label if there are no iteration results
             $('#iterationLabel').hide();
         }
         const iterationTable = document.getElementById('iterationTable');
+        const tableHead = iterationTable.querySelector('thead');
         const tableBody = iterationTable.querySelector('tbody');
-        if (iterationResults.length === 0) {
+        if (Object.keys(iterationResults).length === 0) {
             iterationTable.style.visibility = 'hidden';
             return;
         }
         iterationTable.style.visibility = 'visible';
-        tableBody.innerHTML = ''; // ล้างข้อมูลเดิม
+        tableHead.innerHTML = '';
+        // first column is nodes
+        const nodesRow = document.createElement('tr');
+        const nodesCell = document.createElement('td');
+        nodesCell.textContent = 'nodes';
+        nodesRow.appendChild(nodesCell);
+        // new cell for each node
+        graph.keys().forEach((node) => {
+            const nodeCell = document.createElement('td');
+            nodeCell.textContent = node;
+            nodesRow.appendChild(nodeCell);
+        });
+        tableHead.appendChild(nodesRow);
+        tableBody.innerHTML = '';
 
-        iterationResults.forEach(result => {
+        // Iterate over each iteration
+        Object.keys(iterationResults).forEach(iteration => {
             const row = document.createElement('tr');
-
+            // iteration
             const iterationCell = document.createElement('td');
-            iterationCell.textContent = result.iteration;
+            // if iteration is 0, show 'init'
+            if (iteration === '0') {
+                iterationCell.textContent = 'init';
+            } else {
+                iterationCell.textContent = `Iteration ${iteration}`;
+            }
             row.appendChild(iterationCell);
 
-            const nameCell = document.createElement('td');
-            nameCell.textContent = result.name;
-            row.appendChild(nameCell);
-
-            const distanceCell = document.createElement('td');
-            distanceCell.textContent = result.distance;
-            row.appendChild(distanceCell);
-
-            const pathCell = document.createElement('td');
-            pathCell.textContent = result.path;
-            row.appendChild(pathCell);
+            // Add cells for each node's result in this iteration
+            iterationResults[iteration].forEach(result => {
+                const resultCell = document.createElement('td');
+                resultCell.textContent = result.distance; // or any other property you want to display
+                row.appendChild(resultCell);
+            });
 
             tableBody.appendChild(row);
         });
@@ -805,6 +865,8 @@ document.addEventListener('DOMContentLoaded', () => {
             updateNodePositionsAndSelects(nodeNames);
             // วาดกราฟใหม่
             drawGraph();
+            // อัพเดตตารางของเส้นทาง
+            updateEdgesTable();
         } catch (error) {
             // แสดงข้อความแจ้งเตือนว่าเมทริกซ์ไม่ถูกต้อง
             alert('Invalid matrix format.');
@@ -837,6 +899,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const nodeNames = Array.from(graph.keys());
             updateNodePositionsAndSelects(nodeNames);
             drawGraph();
+            // อัพเดตตารางของเส้นทาง
+            updateEdgesTable();
         } catch (error) {
             alert('Invalid list format.');
         }
