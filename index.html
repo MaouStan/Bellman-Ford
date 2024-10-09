@@ -47,8 +47,10 @@
             </div>
         </div>
 
-        <!-- Results Table Container -->
-        <h2 class="mt-4">Bellman-Ford Results</h2>
+        <canvas id="graphCanvas" width="800" height="600" class="mt-4 mx-auto"></canvas>
+        
+        <!-- Bellman-Ford Results Label -->
+        <h2 id="resultsLabel" class="mt-4" style="display: none;">Bellman-Ford Results</h2>
         <table id="resultsTable" class="table table-bordered" style="visibility: hidden;">
             <thead>
                 <tr>
@@ -61,8 +63,37 @@
                 <!-- Results will be populated here dynamically -->
             </tbody>
         </table>
+
+        <!-- Negative Cycles Detected Label -->
+        <h2 id="cyclesLabel" class="mt-4" style="display: none;">Negative Cycles Detected</h2>
+        <table id="cyclesTable" class="table table-bordered" style="visibility: hidden;">
+            <thead>
+                <tr>
+                    <th>From</th>
+                    <th>To</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Negative cycles will be populated here dynamically -->
+            </tbody>
+        </table>
+
+        <!-- Bellman-Ford Iteration Results Label -->
+        <h2 id="iterationLabel" class="mt-4" style="display: none;">Bellman-Ford Iteration Results</h2>
+        <table id="iterationTable" class="table table-bordered" style="visibility: hidden;">
+            <thead>
+                <tr>
+                    <th>Iteration</th>
+                    <th>Node</th>
+                    <th>Distance</th>
+                    <th>Path</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Iteration results will be populated here dynamically -->
+            </tbody>
+        </table>
     </div>
-    <canvas id="graphCanvas" width="800" height="600" class="mt-4 mx-auto"></canvas>
     <!-- Add Bootstrap JS and dependencies -->
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>

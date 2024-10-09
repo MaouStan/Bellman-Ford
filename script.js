@@ -352,6 +352,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const distances = new Map();
         // สร้างแผนที่สำหรับเก็บโหนดก่อนหน้า
         const predecessors = new Map();
+        // สร้างอาเรย์สำหรับเก็บผลลัพธ์แต่ละ iteration
+        const iterationResults = []; // {{ added: Array to store iteration results }}
+
         // วนลูปผ่านโหนดทั้งหมดในกราฟ
         graph.forEach((nodeData, node) => {
             // กำหนดระยะทางเริ่มต้นเป็น Infinity
@@ -360,11 +363,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // กำหนดระยะทางของโหนดต้นทางเป็น 0
         distances.set(source, 0);
 
+        // สร้างผลลัพธ์ของ iteration แรก
+        graph.forEach((_, node) => {
+            const distance = distances.get(node);
+            const path = reconstructPath(predecessors, source, node);
+            iterationResults.push({ iteration: 0, name: node, distance: distance, path: path });
+            console.log(iterationResults);
+        });
+
         // วนลูป n-1 ครั้ง (n คือจำนวนโหนด)
         for (let i = 0; i < graph.size - 1; i++) {
+            let updated = false; // {{ added: Variable to track updates in this iteration }}
+
             // วนลูปผ่านโหนดทั้งหมดในกราฟ
             graph.forEach((nodeData, u) => {
                 // วนลูปผ่านขอบทั้งหมดของโหนด
+                console.log(i, updated);
                 nodeData.edges.forEach(({ v, weight }) => {
                     // ถ้าระยะทางใหม่สั้นกว่าระยะทางเดิม
                     if (distances.get(u) + weight < distances.get(v)) {
@@ -372,39 +386,53 @@ document.addEventListener('DOMContentLoaded', () => {
                         distances.set(v, distances.get(u) + weight);
                         // อัปเดตโหนดก่อนหน้า
                         predecessors.set(v, u);
+                        console.log(i, updated);
                     }
                 });
             });
+            
+            // บันทึกผลลัพธ์ของ iteration นี้
+            graph.forEach((_, node) => {
+                const distance = distances.get(node);
+                const path = reconstructPath(predecessors, source, node);
+                iterationResults.push({ iteration: i + 1, name: node, distance: distance, path: path });
+                console.log(iterationResults);
+            });
+
+            if (!updated) { // {{ added: No updates in this iteration }}
+                console.log(`No updates in iteration ${i + 1}, terminating early.`);
+                break; // {{ added: Break out of the loop early }}
+            }
         }
 
         // แสดงระยะทางทั้งหมดใน console
         console.log(distances);
 
-        // ตัวแปรสำหรับตรวจสอบว่ามีวงจรน้ำหนักลบหรือไม่
-        let hasNegativeCycle = false;
+        // ตัวแปรสำหรับเก็บขอบที่เป็นส่วนหนึ่งของวงจรน้ำหนักลบ
+        const negativeCycles = []; // {{ modified: Collect all negative cycles }}
+
         // วนลูปผ่านโหนดทั้งหมดในกราฟ
         graph.forEach((nodeData, u) => {
             // วนลูปผ่านขอบทั้งหมดของโหนด
             nodeData.edges.forEach(({ v, weight }) => {
                 // ถ้าระยะทางใหม่สั้นกว่าระยะทางเดิม
                 if (distances.get(u) + weight < distances.get(v)) {
-                    // แสดงข้อความใน console ว่าพบวงจรน้ำหนักลบ
-                    console.log("Negative Cycle Detected between", u, v);
-                    // กำหนดสถานะว่าพบวงจรน้ำหนักลบ
-                    hasNegativeCycle = true;
+                    // เก็บขอบที่เป็นส่วนหนึ่งของวงจรน้ำหนักลบ
+                    negativeCycles.push({ from: u, to: v });
                 }
             });
+            console.log(negativeCycles);
         });
 
-        // ถ้าพบวงจรน้ำหนักลบ
-        if (hasNegativeCycle) {
+        // ถ้ามีวงจรน้ำหนักลบ
+        if (negativeCycles.length > 0) {
+            // สร้างข้อความสำหรับแจ้งเตือน
+            const cycleMessages = negativeCycles.map(cycle => `Negative Cycle Detected between ${cycle.from} and ${cycle.to}`).join('\n');
             // แสดงข้อความแจ้งเตือนว่ากราฟมีวงจรน้ำหนักลบ
-            alert("Graph contains a negative-weight cycle");
-            // ออกจากฟังก์ชัน
-            return;
+            alert(`Graph contains negative-weight cycles:\n${cycleMessages}`);
         }
 
-        // สร้างอาเรย์สำหรับเก็บผลลัพธ์
+        // สร้างอาเรย์สำหรับเก็บผลลัพธ์สุดท้าย
         const results = [];
         // วนลูปผ่านโหนดทั้งหมดในกราฟ
         graph.forEach((_, node) => {
@@ -418,6 +446,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // แสดงผลลัพธ์ในตาราง
         displayResultsTable(results);
+        // แสดงวงจรน้ำหนักลบในตาราง
+        displayCyclesTable(negativeCycles); // {{ added: Display cycles in new table }}
+        // แสดงผลลัพธ์การ iteration ในตาราง
+        displayIterationTable(iterationResults); // {{ added: Display iteration results in new table }}
         // วาดกราฟพร้อมเน้นเส้นทาง
         drawGraph(predecessorsToHighlight(predecessors));
     }
@@ -565,6 +597,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // คืนค่า "No path"
                 return "No path";
             }
+            // or current it already in path
+            if (path.includes(current)) {
+                return "Negative cycle detected";
+            }
         }
         // เพิ่มโหนดต้นทางในเส้นทาง
         path.unshift(source);
@@ -574,6 +610,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ฟังก์ชันสำหรับรับแสดงผลลัพธ์ในตาราง
     function displayResultsTable(results) {
+        // แสดงป้ายชื่อ "Bellman-Ford Results"
+        $('#resultsLabel').show();
         // ดึง element tbody ของตารางผลลัพธ์
         const tableBody = document.querySelector('#resultsTable tbody');
         // แสดงตารางผลลัพธ์
@@ -625,6 +663,81 @@ document.addEventListener('DOMContentLoaded', () => {
         return highlightPath;
     }
 
+    // เพิ่มฟังก์ชันสำหรับแสดงตารางวงจรน้ำหนักลบ
+    function displayCyclesTable(cycles) {
+        if (cycles.length > 0) {
+            // แสดงป้ายชื่อ "Negative Cycles Detected"
+            $('#cyclesLabel').show();
+        } else {
+            // ซ่อนป้ายชื่อหากไม่มีวงจรน้ำหนักลบ
+            $('#cyclesLabel').hide();
+        }
+
+        const cyclesTable = document.getElementById('cyclesTable');
+        const tableBody = cyclesTable.querySelector('tbody');
+        if (cycles.length === 0) {
+            cyclesTable.style.visibility = 'hidden';
+            return;
+        }
+        cyclesTable.style.visibility = 'visible';
+        tableBody.innerHTML = ''; // ล้างข้อมูลเดิม
+
+        cycles.forEach(cycle => {
+            const row = document.createElement('tr');
+
+            const fromCell = document.createElement('td');
+            fromCell.textContent = cycle.from;
+            row.appendChild(fromCell);
+
+            const toCell = document.createElement('td');
+            toCell.textContent = cycle.to;
+            row.appendChild(toCell);
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    // เพิ่มฟังก์ชันสำหรับแสดงตารางผลลัพธ์การ iteration
+    function displayIterationTable(iterationResults) {
+        if (iterationResults.length > 0) {
+            // แสดงป้ายชื่อ "Bellman-Ford Iteration Results"
+            $('#iterationLabel').show();
+        } else {
+            // ซ่อนป้ายชื่อหากไม่มีผลการ iteration
+            $('#iterationLabel').hide();
+        }
+        const iterationTable = document.getElementById('iterationTable');
+        const tableBody = iterationTable.querySelector('tbody');
+        if (iterationResults.length === 0) {
+            iterationTable.style.visibility = 'hidden';
+            return;
+        }
+        iterationTable.style.visibility = 'visible';
+        tableBody.innerHTML = ''; // ล้างข้อมูลเดิม
+
+        iterationResults.forEach(result => {
+            const row = document.createElement('tr');
+
+            const iterationCell = document.createElement('td');
+            iterationCell.textContent = result.iteration;
+            row.appendChild(iterationCell);
+
+            const nameCell = document.createElement('td');
+            nameCell.textContent = result.name;
+            row.appendChild(nameCell);
+
+            const distanceCell = document.createElement('td');
+            distanceCell.textContent = result.distance;
+            row.appendChild(distanceCell);
+
+            const pathCell = document.createElement('td');
+            pathCell.textContent = result.path;
+            row.appendChild(pathCell);
+
+            tableBody.appendChild(row);
+        });
+    }
+
     // ดึงปุ่มที่มี id เป็น 'importMatrix'
     const importMatrixButton = document.getElementById('importMatrix');
     // ดึงปุ่มที่มี id เป็น 'importList'
@@ -660,6 +773,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ฟังก์ชันสำหรับนำเข้าข้อมูลจากเมทริกซ์
     function importFromMatrix(matrixInput) {
+        // Clear the sourceSelect and deleteNodeSelect options before import
+        sourceSelect.innerHTML = '';
+        deleteNodeSelect.innerHTML = '';
+
         try {
             // แปลงข้อมูลเมทริกซ์จาก JSON
             const matrix = JSON.parse(matrixInput.replace(/(\d+),/g, '$1,').replace(/(\d+)\}/g, '$1}'));
@@ -696,6 +813,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ฟังก์ชันสำหรับนำเข้าข้อมูลจากรายการ
     function importFromList(listInput) {
+        // Clear the sourceSelect and deleteNodeSelect options before import
+        sourceSelect.innerHTML = '';
+        deleteNodeSelect.innerHTML = '';
+
         try {
             // Split the input by lines and then by edges
             const lines = listInput.split('\n');
