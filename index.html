@@ -7,10 +7,10 @@
     <title>Bellman-Ford Algorithm Visualization</title>
     <link rel="stylesheet" href="style.css">
     <!-- Add Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
-<body>
+<body class="p-4 w-100 h-100">
     <div id="controls" class="container mt-4">
         <div class="row">
             <div class="col-md-2">
@@ -62,25 +62,26 @@
             </tbody>
         </table>
     </div>
-    <canvas id="graphCanvas" width="800" height="600" class="mt-4 mx-auto w-100"></canvas>
+    <canvas id="graphCanvas" width="800" height="600" class="mt-4 mx-auto"></canvas>
     <!-- Add Bootstrap JS and dependencies -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>    <script src="script.js"></script>
     <!-- Add this inside the body tag, preferably near the end -->
-    <div class="modal fade" id="matrixModal" tabindex="-1" role="dialog" aria-labelledby="matrixModalLabel" aria-hidden="true">
+    <div class="modal fade" id="matrixModal" tabindex="-1" role="dialog" aria-labelledby="matrixModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="matrixModalLabel">Import Matrix</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <label for="matrixInput">Enter matrix in JSON format (e.g., [[0,1,0],[1,0,1],[0,1,0]]):</label>
-                    <textarea id="matrixInput" class="form-control" rows="5" placeholder="[[0,1,0],[1,0,1],[0,1,0]]"></textarea>
+                    <textarea id="matrixInput" class="form-control" rows="5"
+                        placeholder="[[0,1,0],[1,0,1],[0,1,0]]"></textarea>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -90,12 +91,12 @@
         </div>
     </div>
     <!-- Add this inside the body tag, preferably near the end -->
-    <div class="modal fade" id="listModal" tabindex="-1" role="dialog" aria-labelledby="listModalLabel" aria-hidden="true">
+    <div class="modal fade" id="listModal" tabindex="-1" role="dialog" aria-labelledby="listModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="listModalLabel">Import List</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -111,4 +112,5 @@
         </div>
     </div>
 </body>
+
 </html>
